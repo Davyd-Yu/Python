@@ -59,4 +59,3 @@ bicycles = [Bicycle.get_instance(), Bicycle("mountain", "Marta", 45, 34), Bicycl
 
 for bicycle in bicycles:
     print(bicycle)
-
