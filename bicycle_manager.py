@@ -1,22 +1,64 @@
 """
 This is module for realizing all bicycle classes.
 """
-from models.bicycle import Bicycle
-from models.electric_bicycle import ElectricBicycle
-from models.electric_scooter import ElectricScooter
-from models.gyro_scooter import GyroScooter
-
+import datetime
 
 class BicycleManager:
     """
     Class manager for bicycles.
     """
 
+    def log_calls(file_path):
+        """Decorator that logs method calls to a file."""
+
+        def decorator(func):
+            def wrapper(*args, **kwargs):
+                current_time = datetime.datetime.now()
+                method_name = func.__name__
+                call_info = f" {current_time} : {method_name}"
+
+                with open(file_path, 'a') as file:
+                    file.write(call_info)
+
+                result = func(*args, **kwargs)
+
+                return result
+
+            return wrapper
+
+        return decorator
+
+    def print_len_of_iterate_object(func):
+        """Decorator that prints the length of an iterable object returned by a method."""
+
+        def wrapper(*args, **kwargs):
+            result = func(*args, **kwargs)
+            if hasattr(result, '__iter__'):
+                length = len(result)
+            else:
+                length = 1
+            print("Length of iterate object is : ", length)
+            return result
+
+        return wrapper
+
     def __init__(self):
         """
         Initializes a BicycleManager object.
         """
         self.bicycles = []
+
+     def __iter__(self):
+            """Return an iterator for the bicycles collection."""
+            return iter(self.bicycles)
+
+    def __len__(self):
+            """Return the length of the bicycles collection."""
+            return len(self.bicycles)
+
+    def __getitem__(self, item):
+            """Get a bicycle from the collection by index."""
+            return self.bicycles[item]
 
     def add_bicycles(self, bicycle_ex):
         """
@@ -28,55 +70,39 @@ class BicycleManager:
         """
         Finds bicycles with a maximum speed greater than the given value.
         """
-        return filter(lambda bicycle_ex: getattr(bicycle_ex, "max_speed") > max_speed, self.bicycles)
+        return filter(lambda bicycle: bicycle.max_speed > max_speed, self.bicycles)
 
     def find_bicycles_by_brand(self, brand):
         """
         Finds bicycles by determined brand.
         """
-        return list(filter(lambda bicycle_ex: getattr(bicycle_ex, "brand") == brand, self.bicycles))
+        return filter(lambda bicycle: bicycle.brand == brand, self.bicycles)
 
+    def result_of_get_max_distance(self):
+        """Return a list of the maximum distances for each bicycle in the collection."""
+        return [bicycle.get_max_distance() for bicycle in self.bicycles]
 
-if __name__ == "__main__":
+    @log_calls('for_loging_calls')
+    def enumerate_objects(self):
+        """Enumerate the bicycles in the collection and return a list of index-value pairs."""
+        return [
+            f"Index => {i} - value => {j}"
+            for i, j in enumerate(self.bicycles)
+        ]
 
-    bicycle_manager = BicycleManager()
+    def zip_return(self):
+        """Return a list of tuples containing a string representation of each bicycle and its maximum distance."""
+        return list(zip(map(lambda x: str(x), self.bicycles), self.result_of_get_max_distance()))
 
-    bicycle1 = Bicycle("road", "Vor", 65, 35)
-    bicycle2 = Bicycle("mountain", "Default", 50, 120)
-    electric_bicycle1 = ElectricBicycle("road", "Drifter", 64, 43, 23, 0.2)
-    electric_bicycle2 = ElectricBicycle("mountain", "Mini", 70, 13, 45, 0.6)
-    electric_scooter1 = ElectricScooter("road", "Bolt", 20, 5, 3, 15)
-    electric_scooter2 = ElectricScooter("mountain", "AntiBolt", 40, 10, 6, 34)
-    gyro_scooter1 = GyroScooter("mountain", "Xiaomi", 30, 10, 20, 36, 0.2)
-    gyro_scooter2 = GyroScooter("road", "Samson", 50, 20, 30, 48, 0.5)
-
-    bicycle_manager.add_bicycles(bicycle1)
-    bicycle_manager.add_bicycles(bicycle2)
-    bicycle_manager.add_bicycles(electric_bicycle1)
-    bicycle_manager.add_bicycles(electric_bicycle2)
-    bicycle_manager.add_bicycles(electric_scooter1)
-    bicycle_manager.add_bicycles(electric_scooter2)
-    bicycle_manager.add_bicycles(gyro_scooter1)
-    bicycle_manager.add_bicycles(gyro_scooter2)
-
-    for bicycle in bicycle_manager.bicycles:
-        print(bicycle)
-    print("\n")
-
-    bicycles_speed_more_than = bicycle_manager.find_bicycles_with_max_speed_more_than(60)
-    bicycles_with_brand = bicycle_manager.find_bicycles_by_brand("Xiaomi")
-
-    print("Bicycles with max speed more than 60 : ")
-    for bicycle in bicycles_speed_more_than:
-        print(bicycle)
-    print("\n")
-
-    print("Bicycles with brand \"Xiaomi\" : ")
-    for bicycle in bicycles_with_brand:
-        print(bicycle)
-        print("\n")
-
-    print("Bicycles2 with brand \"Xiaomi\" : ")
-    for bicycle in bicycles_with_brand:
-        print(bicycle)
-        print("\n")
+    @print_len_of_iterate_object
+    def all_and_any(self, condition):
+        """
+        Check if all or any of the bicycles in the collection satisfy the given condition.
+        Args:
+            condition: A function that takes a bicycle as input and returns a boolean value.
+        Returns:
+            A dictionary with 'all' and 'any' keys, indicating if all or any of the bicycles satisfy the condition.
+        """
+        any_is_electric_bicycle = any(condition(bicycle) for bicycle in self.bicycles)
+        all_are_electric_bicycles = all(condition(bicycle) for bicycle in self.bicycles)
+        return {"all": all_are_electric_bicycles, "any": any_is_electric_bicycle}

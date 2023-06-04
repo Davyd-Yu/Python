@@ -12,8 +12,10 @@ class Bicycle(AbstractBicycle, ABC):
     """
     __instance = None
 
-  #  def __init__(self, type_of_bicycle="None", brand="None", max_speed=0, current_speed=0):
-   #     super().__init__(type_of_bicycle, brand, max_speed, current_speed)
+    def __init__(self, type_of_bicycle="None", brand="None", max_speed=0, current_speed=0,
+                 the_best_qualities=None):
+        super().__init__(type_of_bicycle, brand, max_speed, current_speed)
+        self._the_best_qualities = the_best_qualities
 
     @staticmethod
     def get_instance():
@@ -28,10 +30,10 @@ class Bicycle(AbstractBicycle, ABC):
         """
         Accelerates the bicycle by thу specified speed
         """
-        if speed < self.__max_speed:
+        if speed < self._max_speed:
             self.__current_speed += speed
             return self.__current_speed
-        return self.__max_speed
+        return self._max_speed
 
     def brake(self):
         """
@@ -53,8 +55,7 @@ class Bicycle(AbstractBicycle, ABC):
         """
         Prints objects by the specified pattern
         """
-        return f"Bicycle: type={self.type_of_bicycle}, brand={self.brand}, " \
-               f"maxSpeed={self.max_speed}, currentSpeed={self.current_speed}"
+        return f"{super().__str__()}"
 
     def get_max_distance(self):
         """
