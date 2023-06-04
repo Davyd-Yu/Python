@@ -8,13 +8,15 @@ class ElectricScooter(AbstractBicycle):
     """Electric scooter class"""
 
     def __init__(self, type_of_bicycle="None", brand="None", max_speed=0, current_speed=0,
-                 time_to_drive_on_battery_charge=0, average_speed=0):
+                 time_to_drive_on_battery_charge=0, average_speed=0,
+                 the_best_qualities=None):
         """
         Initializes an ElectricScooter object.
         """
         super().__init__(type_of_bicycle, brand, max_speed, current_speed)
         self.__time_to_drive_on_battery_charge = time_to_drive_on_battery_charge
         self.__average_speed = average_speed
+        self._the_best_qualities = the_best_qualities
 
     def get_max_distance(self):
         """
@@ -41,7 +43,6 @@ class ElectricScooter(AbstractBicycle):
         """
         Returns a string representation of the ElectricScooter object.
         """
-        return f"ElectricScooter: type={self.type_of_bicycle}, brand={self.brand}, " \
-               f"max_speed={self.max_speed}, current_speed={self.current_speed}, " \
+        return f"{super().__str__()}," \
                f"time_to_drive_on_battery_charge={self.time_to_drive_on_battery_charge}, " \
                f"average_speed={self.average_speed}"
